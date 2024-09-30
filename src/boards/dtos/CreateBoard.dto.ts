@@ -7,6 +7,4 @@ export class CreateBoardDto {
     background: String;
     @IsNotEmpty()
     dashboardIcon: String;
-    // @IsNotEmpty()
-    owner?: string;
 }

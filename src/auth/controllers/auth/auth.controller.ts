@@ -1,5 +1,14 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpStatus,
+    Post,
+    Req,
+    Res,
+    UseGuards,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthDto } from 'src/auth/dtos/Auth.dto';
 import { AuthService } from 'src/auth/services/auth/auth.service';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
@@ -22,7 +31,9 @@ export class AuthController {
 
     @UseGuards(AccessTokenGuard)
     @Get('logout')
-    logout(@Req() req: Request) {
+    logout(@Req() req: Request, @Res() res: Response) {
+        res.status(204).json({ message: 'Logout' });
+
         this.authService.logout(req.user['sub']);
     }
 

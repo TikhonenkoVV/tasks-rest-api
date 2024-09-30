@@ -80,6 +80,7 @@ export class AuthService {
         await this.usersService.updateUser(userId, {
             refreshToken: hashedRefreshToken,
         });
+        return { tokens: { refreshToken: hashedRefreshToken } };
     }
 
     async getTokens(userId: string, email: string) {
@@ -114,12 +115,12 @@ export class AuthService {
 
     async refreshTokens(userId: string, refreshToken: string) {
         const user = await this.usersService.getUserById(userId);
+
         if (!user || !user.refreshToken)
             throw new ForbiddenException('Access Denied');
-        //   const refreshTokenMatches = await argon2.verify(
         const refreshTokenMatches = await bcrypt.compare(
-            user.refreshToken,
-            refreshToken
+            refreshToken,
+            user.refreshToken
         );
         if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
         const tokens = await this.getTokens(user.id, user.email);

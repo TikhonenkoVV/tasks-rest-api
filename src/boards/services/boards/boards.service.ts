@@ -16,7 +16,7 @@ export class BoardsService {
         if (isMatch) {
             throw new HttpException('Board alredy exist.', 409);
         }
-        const newBoard = new this.boardModel(boardData);
+        const newBoard = new this.boardModel({ owner, ...boardData });
         return newBoard.save();
     }
 
