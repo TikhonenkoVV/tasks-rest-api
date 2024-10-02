@@ -32,12 +32,10 @@ export class UsersController {
 
     @Get(':id')
     getUserById(@Param('id') id: string) {
-        console.log(id);
-
         const isValidId = mongoose.Types.ObjectId.isValid(id);
-        if (!isValidId) throw new HttpException('User not found1.', 404);
+        if (!isValidId) throw new HttpException('User not found.', 404);
         const findedUser = this.usersServices.getUserById(id);
-        if (!findedUser) throw new HttpException('User not found2.', 404);
+        if (!findedUser) throw new HttpException('User not found.', 404);
         return findedUser;
     }
 
@@ -47,7 +45,7 @@ export class UsersController {
         const isValidId = mongoose.Types.ObjectId.isValid(id);
         if (!isValidId) throw new HttpException('Invalid id.', 400);
         const updatedUser = this.usersServices.updateUser(id, updateUserDto);
-        if (!updatedUser) throw new HttpException('User not found3', 404);
+        if (!updatedUser) throw new HttpException('User not found', 404);
         return updatedUser;
     }
 
