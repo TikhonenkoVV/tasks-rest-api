@@ -2,6 +2,8 @@ import {
     Body,
     Controller,
     Get,
+    Param,
+    Patch,
     Post,
     Req,
     UseGuards,
@@ -10,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { CreateBoardDto } from 'src/boards/dtos/CreateBoard.dto';
+import { UpdateBoardDto } from 'src/boards/dtos/UpdateBoard.dto';
 import { BoardsService } from 'src/boards/services/boards/boards.service';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 
@@ -27,8 +30,22 @@ export class BoardsController {
 
     @UseGuards(AccessTokenGuard)
     @Get()
-    async getBoards(@Req() req: Request) {
+    getBoards(@Req() req: Request) {
         const owner = req.user['sub'];
         return this.boardServices.getBoerds(owner);
+    }
+
+    @UseGuards(AccessTokenGuard)
+    @Patch(':id')
+    @UsePipes(new ValidationPipe())
+    updateBoard(
+        @Param('id') id: string,
+        @Body() updateBoardDto: UpdateBoardDto,
+        @Req() req: Request
+    ) {
+        const owner = req.user['sub'];
+        console.log('id: ', id);
+
+        return this.boardServices.updateBoard(id, owner, updateBoardDto);
     }
 }
