@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     HttpException,
     Param,
     Patch,
@@ -31,8 +32,23 @@ export class TasksController {
     @UsePipes(new ValidationPipe())
     updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
         const { owner } = updateTaskDto;
-        const isValidId = mongoose.Types.ObjectId.isValid(owner);
+
+        const isValidOwner = mongoose.Types.ObjectId.isValid(owner);
+        if (!isValidOwner) throw new HttpException('Task not found.', 404);
+
+        const isValidId = mongoose.Types.ObjectId.isValid(id);
         if (!isValidId) throw new HttpException('Task not found.', 404);
+
         return this.taskServices.updateTask(id, owner, updateTaskDto);
+    }
+
+    @UseGuards(AccessTokenGuard)
+    @Delete(':id')
+    @UsePipes(new ValidationPipe())
+    deleteTask(@Param('id') id: string) {
+        const isValidId = mongoose.Types.ObjectId.isValid(id);
+        if (!isValidId) throw new HttpException('Task not found.', 404);
+
+        return this.taskServices.deleteTask(id);
     }
 }

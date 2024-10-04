@@ -38,7 +38,7 @@ export class TasksService {
 
         if (isDuplicateTitle) {
             throw new HttpException(
-                'This board name already exists in this user',
+                'This task name already exists in this column',
                 409
             );
         }
@@ -46,15 +46,32 @@ export class TasksService {
         const task = await this.taskModel
             .findByIdAndUpdate(id, updateTaskDto, {
                 new: true,
-                select: '-owner -createdAt -updatedAt',
+                select: '-createdAt -updatedAt',
             })
             .exec();
 
         return {
             status: 'updated',
-            code: 201,
+            code: 200,
             message: 'Task updated successfully',
-            board: task,
+            task: task,
         };
+    }
+
+    async deleteTask(id: string) {
+        const result = await this.taskModel.findByIdAndDelete(id);
+        if (!result) {
+            throw new HttpException('Not found', 404);
+        }
+
+        return { status: 'deleted', code: 200, message: 'Task deleted' };
+    }
+
+    async deleteTasksByOwner(id: string) {
+        const tasks = await this.taskModel.find({ owner: id });
+        const taskId = tasks.map(task => task._id);
+        if (taskId.length > 0) {
+            return await this.taskModel.deleteMany({ _id: taskId });
+        }
     }
 }

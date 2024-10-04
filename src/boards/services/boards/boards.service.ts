@@ -4,10 +4,16 @@ import { Model } from 'mongoose';
 import { CreateBoardDto } from 'src/boards/dtos/CreateBoard.dto';
 import { UpdateBoardDto } from 'src/boards/dtos/UpdateBoard.dto';
 import { Board } from 'src/boards/schemas/boards/Board.schema';
+import { ColumnsService } from 'src/columns/services/columns/columns.service';
+import { TasksService } from 'src/tasks/services/tasks/tasks.service';
 
 @Injectable()
 export class BoardsService {
-    constructor(@InjectModel(Board.name) private boardModel: Model<Board>) {}
+    constructor(
+        @InjectModel(Board.name) private boardModel: Model<Board>,
+        private columnServices: ColumnsService,
+        private tasksServices: TasksService
+    ) {}
 
     async createBoard(owner: string, boardData: CreateBoardDto) {
         const isMatch = await this.boardModel.findOne({
@@ -20,8 +26,22 @@ export class BoardsService {
                 409
             );
         }
-        const newBoard = new this.boardModel({ owner, ...boardData });
-        return newBoard.save();
+        const newBoard = await new this.boardModel({
+            owner,
+            ...boardData,
+        }).save();
+
+        return {
+            status: 'created',
+            code: 201,
+            message: 'Board created successfully',
+            board: {
+                _id: newBoard._id,
+                title: newBoard.title,
+                background: newBoard.background,
+                dashboardIcon: newBoard.dashboardIcon,
+            },
+        };
     }
 
     async getBoerds(owner: string) {
@@ -65,6 +85,29 @@ export class BoardsService {
             code: 201,
             message: 'Board updated successfully',
             board: board,
+        };
+    }
+
+    async deleteBoard(id: string) {
+        const columns = await this.columnServices.getColumnsByOwner(id);
+        const columnsId = columns.map(col => col._id);
+
+        if (columnsId.length > 0) {
+            columnsId.map(async id =>
+                this.tasksServices.deleteTasksByOwner(id.toString())
+            );
+            columnsId.map(async col =>
+                this.columnServices.deleteColumnsByOwner(col.toString())
+            );
+        }
+        const deletedBoard = await this.boardModel.findByIdAndDelete({
+            _id: id,
+        });
+        return {
+            status: 'success',
+            code: 200,
+            message: 'Board deleted',
+            board: deletedBoard,
         };
     }
 }

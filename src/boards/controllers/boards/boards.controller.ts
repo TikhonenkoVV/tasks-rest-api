@@ -1,7 +1,9 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
+    HttpException,
     Param,
     Patch,
     Post,
@@ -11,6 +13,7 @@ import {
     ValidationPipe,
 } from '@nestjs/common';
 import { Request } from 'express';
+import mongoose from 'mongoose';
 import { CreateBoardDto } from 'src/boards/dtos/CreateBoard.dto';
 import { UpdateBoardDto } from 'src/boards/dtos/UpdateBoard.dto';
 import { BoardsService } from 'src/boards/services/boards/boards.service';
@@ -47,5 +50,14 @@ export class BoardsController {
         console.log('id: ', id);
 
         return this.boardServices.updateBoard(id, owner, updateBoardDto);
+    }
+
+    @UseGuards(AccessTokenGuard)
+    @Delete(':id')
+    @UsePipes(new ValidationPipe())
+    deleteBoard(@Param('id') id: string) {
+        const isValidId = mongoose.Types.ObjectId.isValid(id);
+        if (!isValidId) throw new HttpException('Board not found.', 404);
+        return this.boardServices.deleteBoard(id);
     }
 }

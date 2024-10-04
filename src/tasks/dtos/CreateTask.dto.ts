@@ -4,14 +4,14 @@ import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 export class CreateTaskDto {
     @IsNotEmpty()
     @IsString()
-    title: String;
+    title: string;
 
     @IsString()
-    description: String;
+    description: string;
 
     @IsNotEmpty()
     @IsString()
-    priority: String;
+    priority: string;
 
     @IsDate()
     @Type(() => Date)
@@ -19,7 +19,7 @@ export class CreateTaskDto {
 
     @IsNotEmpty()
     @IsNumber()
-    index: Number;
+    index: number;
 
     @IsNotEmpty()
     @IsString()

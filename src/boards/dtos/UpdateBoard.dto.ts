@@ -3,11 +3,13 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class UpdateBoardDto {
     @IsNotEmpty()
     @IsString()
-    title: String;
+    title: string;
+
     @IsNotEmpty()
     @IsString()
-    background: String;
+    background: string;
+
     @IsNotEmpty()
     @IsString()
-    dashboardIcon: String;
+    dashboardIcon: string;
 }

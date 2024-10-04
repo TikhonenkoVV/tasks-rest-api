@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class CreateColumnDto {
+export class UpdateColumnDto {
     @IsNotEmpty()
     @IsString()
     title: string;
