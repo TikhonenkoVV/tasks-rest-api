@@ -18,23 +18,27 @@ export class UsersService {
         return this.userModel.findOne({ email }).exec();
     }
 
-    // getUsers() {
-    //     return this.userModel.find();
-    // }
+    getUsers() {
+        return this.userModel.find();
+    }
 
     async getUserById(id: string): Promise<UserDocument> {
         return this.userModel.findById(id).exec();
     }
 
-    async updateUser(
-        userId: string,
-        updateUserDto: UpdateUserDto
-    ): Promise<UserDocument> {
-        return this.userModel
+    async updateUser(userId: string, updateUserDto: UpdateUserDto) {
+        const result = await this.userModel
             .findByIdAndUpdate(userId, updateUserDto, {
                 new: true,
             })
             .exec();
+        return {
+            name: result.name,
+            email: result.email,
+            theme: result.theme,
+            avatarURL: result.avatarURL,
+            avatarURLsmall: result.avatarURLsmall,
+        };
     }
 
     async deleteUser(id: string): Promise<UserDocument> {

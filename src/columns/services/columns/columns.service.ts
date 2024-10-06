@@ -1,6 +1,6 @@
 import { HttpException, Injectable, Type } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateColumnDto } from 'src/columns/dtos/CreateColumn.dto';
 import { UpdateColumnDto } from 'src/columns/dtos/UpdateColumn.dto';
 import { Column } from 'src/columns/schemas/columns/Column.schema';
@@ -84,12 +84,13 @@ export class ColumnsService {
     }
 
     async deleteColumn(id: string) {
-        await this.taskServices.deleteTasksByOwner(id);
         const result = await this.columnModel.findByIdAndDelete(id);
 
         if (!result) {
             throw new HttpException('Not found', 404);
         }
+
+        await this.taskServices.deleteTasksByOwner(id);
 
         return {
             status: 'deleted',

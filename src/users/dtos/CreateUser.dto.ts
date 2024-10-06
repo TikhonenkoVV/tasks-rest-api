@@ -9,17 +9,7 @@ export class CreateUserDto {
     @IsEmail()
     email: string;
 
+    @IsNotEmpty()
     @IsString()
     name: string;
-
-    @IsOptional()
-    @IsString()
-    theme?: string;
-
-    @IsOptional()
-    @IsString()
-    avatarURL?: string;
-
-    @IsString()
-    refreshToken: string;
 }

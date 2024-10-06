@@ -21,6 +21,9 @@ export class User {
     avatarURL: string;
 
     @Prop()
+    avatarURLsmall: string;
+
+    @Prop()
     refreshToken: string;
 }
 

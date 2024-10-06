@@ -9,7 +9,6 @@ import { UsersService } from 'src/users/srvices/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 import { AuthDto } from 'src/auth/dtos/Auth.dto';
-import { jwtConstants } from 'src/auth/constants';
 
 @Injectable()
 export class AuthService {
@@ -71,6 +70,7 @@ export class AuthService {
             email: user.email,
             theme: user.theme,
             avatarURL: user.avatarURL,
+            avatarURLsmall: user.avatarURLsmall,
         };
     }
 
@@ -91,7 +91,7 @@ export class AuthService {
                     email,
                 },
                 {
-                    secret: jwtConstants.access_secret,
+                    secret: process.env.JWT_SECRET_ACCESS,
                     expiresIn: '15m',
                 }
             ),
@@ -101,7 +101,7 @@ export class AuthService {
                     email,
                 },
                 {
-                    secret: jwtConstants.refresh_secret,
+                    secret: process.env.JWT_SECRET_REFRESH,
                     expiresIn: '7d',
                 }
             ),

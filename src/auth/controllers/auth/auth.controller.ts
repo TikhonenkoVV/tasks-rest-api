@@ -29,6 +29,7 @@ export class AuthController {
         return this.authService.signIn(authDto);
     }
 
+    @Get('google')
     @UseGuards(AccessTokenGuard)
     @Get('logout')
     logout(@Req() req: Request, @Res() res: Response) {

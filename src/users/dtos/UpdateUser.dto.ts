@@ -15,6 +15,11 @@ export class UpdateUserDto {
     @IsString()
     avatarURL?: string;
 
+    @IsOptional()
     @IsString()
-    refreshToken: string;
+    avatarURLsmall?: string;
+
+    @IsOptional()
+    @IsString()
+    refreshToken?: string;
 }

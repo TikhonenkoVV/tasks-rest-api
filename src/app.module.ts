@@ -7,19 +7,19 @@ import { AuthModule } from './auth/auth.module';
 import { BoardsModule } from './boards/boards.module';
 import { ColumnsModule } from './columns/columns.module';
 import { TasksModule } from './tasks/tasks.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [
-    MongooseModule.forRoot(
-      'mongodb+srv://admin:CkfIFku5cupQL8Up@cluster0.0huzu5p.mongodb.net/tasks_api?retryWrites=true&w=majority',
-    ),
-    UsersModule,
-    AuthModule,
-    BoardsModule,
-    ColumnsModule,
-    TasksModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        ConfigModule.forRoot(),
+        MongooseModule.forRoot(process.env.DB_HOST),
+        UsersModule,
+        AuthModule,
+        BoardsModule,
+        ColumnsModule,
+        TasksModule,
+    ],
+    controllers: [AppController],
+    providers: [AppService],
 })
 export class AppModule {}
