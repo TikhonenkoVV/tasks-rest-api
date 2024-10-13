@@ -55,6 +55,7 @@ export class AuthService {
                 email: user.email,
                 theme: user.theme,
                 avatarURL: user.avatarURL,
+                avatarURLsmall: user.avatarURLsmall,
             },
         };
     }
