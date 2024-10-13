@@ -63,9 +63,14 @@ export class AuthService {
         return this.usersService.updateUser(userId, { refreshToken: null });
     }
 
+    async deleteUser(userId: string) {
+        return this.usersService.deleteUser(userId);
+    }
+
     async getCurrentUser(email: string) {
         const user = await this.usersService.getCurrent(email);
         return {
+            id: user._id,
             name: user.name,
             email: user.email,
             theme: user.theme,
@@ -126,5 +131,20 @@ export class AuthService {
         const tokens = await this.getTokens(user.id, user.email);
         await this.updateRefreshToken(user.id, tokens.refreshToken);
         return tokens;
+    }
+
+    async validateGoogleUser(googleUserDto: CreateUserDto) {
+        const user = await this.usersService.getCurrent(googleUserDto.email);
+        if (user)
+            return {
+                id: user._id,
+                email: user.email,
+            };
+        const newUser = await this.signUp(googleUserDto);
+        const currentUser = await this.getCurrentUser(newUser.email);
+        return {
+            id: currentUser.id,
+            email: currentUser.email,
+        };
     }
 }

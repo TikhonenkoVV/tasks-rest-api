@@ -35,7 +35,7 @@ export class BoardsController {
     @Get()
     getBoards(@Req() req: Request) {
         const owner = req.user['sub'];
-        return this.boardServices.getBoerds(owner);
+        return this.boardServices.getBoards(owner);
     }
 
     @UseGuards(AccessTokenGuard)

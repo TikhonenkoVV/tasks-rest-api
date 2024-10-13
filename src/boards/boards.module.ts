@@ -19,5 +19,6 @@ import { TasksModule } from 'src/tasks/tasks.module';
     ],
     controllers: [BoardsController],
     providers: [BoardsService],
+    exports: [BoardsService],
 })
 export class BoardsModule {}

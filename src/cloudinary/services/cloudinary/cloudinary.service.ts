@@ -28,7 +28,7 @@ export class CloudinaryService {
                     transformation: {
                         width: width,
                         height: width,
-                        crop: 'pad',
+                        crop: 'fill',
                     },
                 },
                 (error, result) => {
@@ -36,6 +36,15 @@ export class CloudinaryService {
                     resolve(result);
                 }
             );
+        });
+    }
+
+    async destroyImage(publicId: string) {
+        return new Promise((resolve, reject) => {
+            v2.uploader.destroy(publicId, (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+            });
         });
     }
 }

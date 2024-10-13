@@ -8,6 +8,8 @@ import { BoardsModule } from './boards/boards.module';
 import { ColumnsModule } from './columns/columns.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ConfigModule } from '@nestjs/config';
+import { HelpService } from './help/services/help/help.service';
+import { HelpModule } from './help/help.module';
 
 @Module({
     imports: [
@@ -18,8 +20,9 @@ import { ConfigModule } from '@nestjs/config';
         BoardsModule,
         ColumnsModule,
         TasksModule,
+        HelpModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [AppService, HelpService],
 })
 export class AppModule {}

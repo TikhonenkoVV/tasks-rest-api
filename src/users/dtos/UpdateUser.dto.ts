@@ -9,6 +9,10 @@ export class UpdateUserDto {
 
     @IsOptional()
     @IsString()
+    password?: string;
+
+    @IsOptional()
+    @IsString()
     theme?: string;
 
     @IsOptional()

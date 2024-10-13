@@ -4,10 +4,16 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/users/schemas/users/User.schema';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 import { UpdateUserDto } from 'src/users/dtos/UpdateUser.dto';
-
+import * as bcrypt from 'bcrypt';
+import { BoardsService } from 'src/boards/services/boards/boards.service';
+import { CloudinaryService } from 'src/cloudinary/services/cloudinary/cloudinary.service';
 @Injectable()
 export class UsersService {
-    constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+    constructor(
+        @InjectModel(User.name) private userModel: Model<User>,
+        private boardsServices: BoardsService,
+        private cloudinaryServices: CloudinaryService
+    ) {}
 
     async createUser(createUserDto: CreateUserDto): Promise<UserDocument> {
         const newUser = new this.userModel(createUserDto);
@@ -18,7 +24,7 @@ export class UsersService {
         return this.userModel.findOne({ email }).exec();
     }
 
-    getUsers() {
+    async getUsers() {
         return this.userModel.find();
     }
 
@@ -27,11 +33,20 @@ export class UsersService {
     }
 
     async updateUser(userId: string, updateUserDto: UpdateUserDto) {
+        if (updateUserDto.password) {
+            const salt = await bcrypt.genSalt();
+            const hashPassword = await bcrypt.hash(
+                updateUserDto.password,
+                salt
+            );
+            updateUserDto.password = hashPassword;
+        }
         const result = await this.userModel
             .findByIdAndUpdate(userId, updateUserDto, {
                 new: true,
             })
             .exec();
+
         return {
             name: result.name,
             email: result.email,
@@ -42,6 +57,9 @@ export class UsersService {
     }
 
     async deleteUser(id: string): Promise<UserDocument> {
+        await this.boardsServices.deleteBoardsByOwner(id);
+        await this.cloudinaryServices.destroyImage(`tasks/avatars/${id}`);
+        await this.cloudinaryServices.destroyImage(`tasks/avatars/${id}_small`);
         return this.userModel.findByIdAndDelete(id).exec();
     }
 }

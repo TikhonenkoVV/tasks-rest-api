@@ -2,13 +2,14 @@ import {
     Body,
     Controller,
     Get,
-    HttpStatus,
     Post,
     Req,
     Res,
     UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
+import { Public } from 'src/auth/decorators/public.decorator';
 import { AuthDto } from 'src/auth/dtos/Auth.dto';
 import { AuthService } from 'src/auth/services/auth/auth.service';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
@@ -19,25 +20,54 @@ import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 export class AuthController {
     constructor(private authService: AuthService) {}
 
+    @Public()
     @Post('register')
     signup(@Body() createUserDto: CreateUserDto) {
         return this.authService.signUp(createUserDto);
     }
 
+    @Public()
     @Post('login')
     signIn(@Body() authDto: AuthDto) {
         return this.authService.signIn(authDto);
     }
 
+    @Public()
     @Get('google')
+    @UseGuards(AuthGuard('google'))
+    googleAuth() {}
+
+    @Public()
+    @Get('google/callback')
+    @UseGuards(AuthGuard('google'))
+    async googleCallback(@Req() req: Request, @Res() res: Response) {
+        console.log('User Google callback: ', req.user);
+
+        const response = await this.authService.getTokens(
+            req.user['id'],
+            req.user['email']
+        );
+        await this.authService.updateRefreshToken(
+            req.user['id'],
+            req.user['email']
+        );
+        res.redirect(
+            `${process.env.FRONTEND_URL}?accessToken=${response.accessToken}&refreshToken=${response.refreshToken}`
+        );
+    }
+
+    @Public()
     @UseGuards(AccessTokenGuard)
     @Get('logout')
     logout(@Req() req: Request, @Res() res: Response) {
         res.status(204).json({ message: 'Logout' });
+        console.log('UserLogOut', req.user);
+        console.log('UserLogOut', req.user['sub']);
 
-        this.authService.logout(req.user['sub']);
+        return this.authService.logout(req.user['sub']);
     }
 
+    @Public()
     @UseGuards(RefreshTokenGuard)
     @Get('refresh')
     refreshTokens(@Req() req: Request) {
@@ -46,6 +76,7 @@ export class AuthController {
         return this.authService.refreshTokens(userId, refreshToken);
     }
 
+    @Public()
     @UseGuards(AccessTokenGuard)
     @Get('current')
     getCurrent(@Req() req: Request) {

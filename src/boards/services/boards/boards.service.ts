@@ -44,7 +44,7 @@ export class BoardsService {
         };
     }
 
-    async getBoerds(owner: string) {
+    async getBoards(owner: string) {
         const boardsArr = await this.boardModel.find({ owner });
         return {
             status: 'success',
@@ -109,5 +109,13 @@ export class BoardsService {
             message: 'Board deleted',
             board: deletedBoard,
         };
+    }
+
+    async deleteBoardsByOwner(owner: string) {
+        const boards = await this.getBoards(owner);
+        const boardsIdArr = boards.boards.map(board => board._id);
+        return boardsIdArr.map(async id => {
+            await this.deleteBoard(id.toString());
+        });
     }
 }

@@ -22,6 +22,7 @@ import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 import { UpdateUserDto } from 'src/users/dtos/UpdateUser.dto';
 import { UsersService } from 'src/users/srvices/users/users.service';
+import * as fs from 'fs';
 
 @Controller('api/users')
 export class UsersController {
@@ -63,6 +64,7 @@ export class UsersController {
         return updatedUser;
     }
 
+    @UseGuards(AccessTokenGuard)
     @Delete(':id')
     deleteUser(@Param('id') id: string) {
         return this.usersServices.deleteUser(id);
@@ -90,6 +92,13 @@ export class UsersController {
         await this.usersServices.updateUser(id, {
             avatarURL: avatar.secure_url,
             avatarURLsmall: avatarSmall.secure_url,
+        });
+
+        fs.unlink(file.path, err => {
+            if (err) {
+                console.error(err);
+                return err;
+            }
         });
 
         return {
