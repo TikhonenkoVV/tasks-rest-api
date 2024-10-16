@@ -41,8 +41,6 @@ export class AuthController {
     @Get('google/callback')
     @UseGuards(AuthGuard('google'))
     async googleCallback(@Req() req: Request, @Res() res: Response) {
-        console.log('User Google callback: ', req.user);
-
         const response = await this.authService.getTokens(
             req.user['id'],
             req.user['email']
@@ -61,9 +59,6 @@ export class AuthController {
     @Get('logout')
     logout(@Req() req: Request, @Res() res: Response) {
         res.status(204).json({ message: 'Logout' });
-        console.log('UserLogOut', req.user);
-        console.log('UserLogOut', req.user['sub']);
-
         return this.authService.logout(req.user['sub']);
     }
 

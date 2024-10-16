@@ -7,8 +7,6 @@ export class HelpController {
     constructor(private helpServices: HelpService) {}
     @Post()
     sendMail(@Body() sendMailDto: SendMailDto) {
-        console.log('DTO: ', sendMailDto);
-
         return this.helpServices.sendMail(sendMailDto);
     }
 }
